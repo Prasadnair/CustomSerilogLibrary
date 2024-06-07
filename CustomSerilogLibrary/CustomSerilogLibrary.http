@@ -1,0 +1,6 @@
+@CustomSerilogLibrary_HostAddress = http://localhost:5155
+
+GET {{CustomSerilogLibrary_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
