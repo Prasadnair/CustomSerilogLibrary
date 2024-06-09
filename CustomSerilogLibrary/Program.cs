@@ -13,7 +13,8 @@ builder.Services.AddMemoryCache();
 
 // Initialize Serilog configuration using the custom SerilogConfigurator
 var cache = new MemoryCache(new MemoryCacheOptions());
-var serilogConfigurator = new SerilogConfigurator(builder.Configuration, cache);
+//var serilogConfigurator = new SerilogConfigurator(builder.Configuration, cache);
+var serilogConfigurator = new CustomSerilogConfigurator(builder.Configuration, cache);
 await serilogConfigurator.InitializeAsync(); // Ensure this is called before building the host
 
 
@@ -53,6 +54,13 @@ app.MapGet("/weatherforecast", (ILogger<Program> logger) =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+
+// Periodically refresh the cache
+var timer = new System.Threading.Timer(async _ =>
+{
+    await serilogConfigurator.InitializeAsync();
+}, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
 
 app.Run();
 
