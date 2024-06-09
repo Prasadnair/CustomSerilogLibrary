@@ -7,7 +7,27 @@ CREATE TABLE SerilogConfig (
     Configuration NVARCHAR(MAX) NOT NULL
 );
 # insert the data 
-INSERT INTO SerilogConfig (Configuration) VALUES (N'{"Serilog": {"Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"], "MinimumLevel": "Information", "WriteTo": [{"Name": "Console"}, {"Name": "File", "Args": {"path": "Logs/log-.txt", "rollingInterval": "Day"}}]}}');
-
+INSERT INTO SerilogConfig (Configuration)
+VALUES (N'{
+  "Serilog": {
+    "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.MSSqlServer"],
+    "MinimumLevel": {
+      "Default": "Warning"
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "MSSqlServer",
+        "Args": {
+          "connectionString": "{SerilogConnectionString}",
+          "tableName": "Logs",
+          "autoCreateSqlTable": true
+        }
+      }
+    ]
+  }
+}');
 
 
