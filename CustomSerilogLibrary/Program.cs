@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Caching.Memory;
-using Serilog;
 using SerilogHandler;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,18 +9,21 @@ builder.Services.AddSwaggerGen();
 // Add services to the container.
 builder.Services.AddMemoryCache();
 
-// Initialize Serilog configuration using the custom SerilogConfigurator
-var cache = new MemoryCache(new MemoryCacheOptions());
-//var serilogConfigurator = new SerilogConfigurator(builder.Configuration, cache);
-var serilogConfigurator = new CustomSerilogConfigurator(builder.Configuration, cache);
-await serilogConfigurator.InitializeAsync(); // Ensure this is called before building the host
+//builder.Services.AddSerilogConfiguration(); // Add the custom Serilog configuration services
 
+await builder.UseCustomSerilogAsync();
+//// Initialize Serilog configuration using the custom SerilogConfigurator
+//var cache = new MemoryCache(new MemoryCacheOptions());
+////var serilogConfigurator = new SerilogConfigurator(builder.Configuration, cache);
+//var serilogConfigurator = new CustomSerilogConfigurator(builder.Configuration, cache);
+//await serilogConfigurator.InitializeAsync(); // Ensure this is called before building the host
 
-builder.Host.UseSerilog();
+//await builder.UseSerilogWithConfigurationAsync();
+
+//builder.Host.UseSerilog();
 
 var app = builder.Build();
-
-app.UseSerilogRequestLogging(); // Log HTTP requests
+//app.UseSerilogRequestLogging(); // Log HTTP requests
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -57,10 +58,10 @@ app.MapGet("/weatherforecast", (ILogger<Program> logger) =>
 
 
 // Periodically refresh the cache
-var timer = new System.Threading.Timer(async _ =>
-{
-    await serilogConfigurator.InitializeAsync();
-}, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
+//var timer = new System.Threading.Timer(async _ =>
+//{
+//    await serilogConfigurator.InitializeAsync();
+//}, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
 
 app.Run();
 
